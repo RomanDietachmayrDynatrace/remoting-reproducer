@@ -1,0 +1,18 @@
+embed-server --std-out=echo  --server-config=standalone-openshift.xml
+
+# admin console
+/core-service=management/management-interface=http-interface:write-attribute(name=console-enabled,value=true)
+
+# access log
+# https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.3/html/configuration_guide/configuring_the_web_server_undertow
+/subsystem=undertow/server=default-server/host=default-host/setting=console-access-log: \
+    add( \
+        attributes={ \
+            bytes-sent={}, \
+            date-time={key="@timestamp", date-format="yyyy-MM-dd'T'HH:mm:ssSSS"}, \
+            request-header={key-prefix="ReqHeader", names=["Content-Type", "traceparent", "tracestate"]},  \
+            remote-host={}, \
+            request-line={} \
+        } \
+    )
+quit
